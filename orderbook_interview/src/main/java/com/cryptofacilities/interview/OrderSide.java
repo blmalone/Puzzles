@@ -9,20 +9,14 @@ import java.util.TreeMap;
  */
 public class OrderSide {
 
-    //Consists of a Price-Level (orders with same price are grouped together)
     private TreeMap<Long, LinkedList<Order>> pricesTree = new TreeMap<Long, LinkedList<Order>>();
-    //Fast for Price exists operations and getPriceList O(1) - could cannot store duplicate keys
     private HashMap<Long, LinkedList<Order>> pricesHashMap = new HashMap<Long, LinkedList<Order>>();
-    //Fast for contains operations O(1) -
     private HashMap<String, Order> orderHashMap = new HashMap<String, Order>();
-
     private long numberOfOrdersOnSide;
     private long tradeableQuantityOnSide;
     private long totalVolumeOnSide;
 
     public OrderSide() {
-        //Do i care about the ordering of the orders in a level in the asksTree? Why? Because I'll not be retrieving
-        //them from that structure. I just want to ensure that th contents of the two structures are kept consistent.
         pricesTree.clear();
         pricesHashMap.clear();
         orderHashMap.clear();
@@ -42,7 +36,6 @@ public class OrderSide {
                 pricesHashMap.put(priceLevel, newOrdersList); // Fast retrieval of prices operations
                 orderHashMap.put(orderId, order); // Fast order operations
             } else {
-                //Add the order now at the given price level
                 orderHashMap.put(orderId, order);
                 LinkedList<Order> orders = pricesHashMap.get(priceLevel);
                 orders.addLast(order);
@@ -52,6 +45,30 @@ public class OrderSide {
             tradeableQuantityOnSide =+ order.getQuantity();
             totalVolumeOnSide = totalVolumeOnSide + (priceLevel * order.getQuantity());
         }
+    }
+
+    public void modifyOrder(final String orderId, final long newQuantity) {
+        Order order = orderHashMap.get(orderId);
+        if (order != null && order.getQuantity() != newQuantity) {
+            long oldQuantity = order.getQuantity();
+            long priceLevel = order.getPrice();
+            int indexTree = pricesTree.get(priceLevel).indexOf(order);
+            int indexMap = pricesTree.get(priceLevel).indexOf(order);
+            order.setQuantity(newQuantity);
+            if (newQuantity < oldQuantity) { //Order maintains it's position in price level
+                pricesTree.get(priceLevel).add(indexTree, order);
+                pricesHashMap.get(priceLevel).add(indexMap, order);
+                orderHashMap.put(orderId, order);
+            } else { //Order falls to bottom of queue in price level
+                pricesTree.get(priceLevel).remove(indexTree);
+                pricesTree.get(priceLevel).addLast(order);
+                pricesHashMap.get(priceLevel).remove(indexMap);
+                pricesHashMap.get(priceLevel).addLast(order);
+            }
+            tradeableQuantityOnSide = (tradeableQuantityOnSide - oldQuantity) + newQuantity;
+            totalVolumeOnSide = (totalVolumeOnSide - (priceLevel * oldQuantity)) + (priceLevel * newQuantity);
+        }
+
     }
 
     public void deleteOrder(final String orderId) {
@@ -72,6 +89,27 @@ public class OrderSide {
             orderHashMap.remove(orderId);
         }
     }
+
+    public long getTradeableQuantityForLevel(final long priceLevel) {
+        long result = 0;
+        for (Order order : pricesHashMap.get(priceLevel)) {
+            result += order.getQuantity();
+        }
+        return result;
+    }
+
+    public LinkedList<Order> getOrdersAtPriceLevel(final Long priceLevel) {
+        return pricesHashMap.get(priceLevel);
+    }
+
+    public long getTotalVolumeAtLevel(final long priceLevel) {
+        long totalVolume = 0;
+        for (Order order : pricesHashMap.get(priceLevel)) {
+            totalVolume = totalVolume + (priceLevel * order.getQuantity());
+        }
+        return totalVolume;
+    }
+
 
     public TreeMap<Long, LinkedList<Order>> getPricesTree() {
         return pricesTree;
@@ -119,25 +157,5 @@ public class OrderSide {
 
     public void setTotalVolumeOnSide(final long totalVolumeOnSide) {
         this.totalVolumeOnSide = totalVolumeOnSide;
-    }
-
-    public long getTradeableQuantityForLevel(final long priceLevel) {
-        long result = 0;
-        for (Order order : pricesHashMap.get(priceLevel)) {
-            result += order.getQuantity();
-        }
-        return result;
-    }
-
-    public LinkedList<Order> getOrdersAtPriceLevel(final Long priceLevel) {
-        return pricesHashMap.get(priceLevel);
-    }
-
-    public long getTotalVolumeAtLevel(final long priceLevel) {
-        long totalVolume = 0;
-        for (Order order : pricesHashMap.get(priceLevel)) {
-            totalVolume = totalVolume + (priceLevel * order.getQuantity());
-        }
-        return totalVolume;
     }
 }

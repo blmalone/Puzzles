@@ -32,7 +32,10 @@ public class OrderBookManagerImpl implements OrderBookManager {
     }
 
     public void modifyOrder(final String orderId, final long newQuantity) {
-
+        if (orderId != null && newQuantity > 0) {
+            final OrderBook btcOrderBook = orderBooks.get("BTC");
+            btcOrderBook.modifyOrder(orderId, newQuantity);
+        }
     }
 
     public void deleteOrder(final String orderId) {
