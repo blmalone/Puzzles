@@ -15,6 +15,7 @@ public class SampleTest {
         OrderBookManager orderBookManager = new OrderBookManagerImpl();
 
         // create order
+        //Instrument - Vodafone.London
         Order buy = new Order("order1", "VOD.L", Side.buy, 200, 10 );
 
         // send order

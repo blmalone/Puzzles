@@ -1,5 +1,6 @@
 package com.cryptofacilities.interview;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -7,35 +8,78 @@ import java.util.List;
  */
 public class OrderBookManagerImpl implements OrderBookManager {
 
-    public void addOrder(Order order) {
+    /*
+        Only one order book for this assignment. In reality there would be multiple order books.
+        Each dedicated to  it's own separate instrument.
+     */
+    private HashMap<String, OrderBook> orderBooks = new HashMap<String, OrderBook>() {{
+       put("BTC", new OrderBook("BTC"));
+    }};
+
+    public void addOrder(final Order order) {
+        if (order != null && order.getQuantity() > 0 && order.getPrice() > 0) { //Assuming everything has a price > 0
+            OrderBook orderBook = orderBooks.get(order.getInstrument());
+            if (orderBook != null) {
+                if (order.getSide().equals(Side.buy)) {
+                    final OrderSide bidSide = orderBook.getBidSide();
+                    bidSide.addNewOrder(order);
+                } else {
+                    final OrderSide askSide = orderBook.getAskSide();
+                    askSide.addNewOrder(order);
+                }
+            }
+        }
+    }
+
+    public void modifyOrder(final String orderId, final long newQuantity) {
 
     }
 
-    public void modifyOrder(String orderId, long newQuantity) {
-
+    public void deleteOrder(final String orderId) {
+        if (orderId != null) {
+            final OrderBook btcOrderBook = orderBooks.get("BTC");
+            btcOrderBook.deleteOrder(orderId);
+        }
     }
 
-    public void deleteOrder(String orderId) {
-
-    }
-
-    public long getBestPrice(String instrument, Side side) {
+    public long getBestPrice(final String instrument, final Side side) {
+        OrderBook orderBook = orderBooks.get(instrument);
+        if (orderBook != null) {
+            return orderBook.getBestPriceForSide(side);
+        }
         return 0;
     }
 
-    public long getOrderNumAtLevel(String instrument, Side side, long price) {
+    public long getOrderNumAtLevel(final String instrument, final Side side, final long price) {
+        OrderBook orderBook = orderBooks.get(instrument);
+        if (orderBook != null) {
+            final List<Order> ordersAtLevel = orderBook.getOrdersAtLevel(side, price);
+            return ordersAtLevel != null ? ordersAtLevel.size() : 0;
+        }
         return 0;
     }
 
-    public long getTotalQuantityAtLevel(String instrument, Side side, long price) {
+    public long getTotalQuantityAtLevel(final String instrument, final Side side, final long price) {
+        OrderBook orderBook = orderBooks.get(instrument);
+        if (orderBook != null) {
+            return orderBook.getTotalQuantityAtLevel(side, price);
+        }
         return 0;
     }
 
-    public long getTotalVolumeAtLevel(String instrument, Side side, long price) {
+    public long getTotalVolumeAtLevel(final String instrument, final Side side, final long price) {
+        OrderBook orderBook = orderBooks.get(instrument);
+        if (orderBook != null) {
+            return orderBook.getTotalVolumeAtLevel(side, price);
+        }
         return 0;
     }
 
-    public List<Order> getOrdersAtLevel(String instrument, Side side, long price) {
+    public List<Order> getOrdersAtLevel(final String instrument, final Side side, final long price) {
+        OrderBook orderBook = orderBooks.get(instrument);
+        if (orderBook != null) {
+            return orderBook.getOrdersAtLevel(side, price);
+        }
         return null;
     }
 }
