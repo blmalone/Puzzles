@@ -12,7 +12,7 @@ public class OrderSide {
     private TreeMap<Long, LinkedList<Order>> pricesTree = new TreeMap<Long, LinkedList<Order>>();
     private HashMap<Long, LinkedList<Order>> pricesHashMap = new HashMap<Long, LinkedList<Order>>();
     private HashMap<String, Order> orderHashMap = new HashMap<String, Order>();
-    private long numberOfOrdersOnSide;
+    private long numberOfOrdersAtSide;
     private long tradeableQuantityOnSide;
     private long totalVolumeOnSide;
 
@@ -20,7 +20,7 @@ public class OrderSide {
         pricesTree.clear();
         pricesHashMap.clear();
         orderHashMap.clear();
-        numberOfOrdersOnSide = 0;
+        numberOfOrdersAtSide = 0;
         tradeableQuantityOnSide = 0;
         totalVolumeOnSide = 0;
     }
@@ -41,8 +41,8 @@ public class OrderSide {
                 orders.addLast(order);
                 pricesHashMap.put(priceLevel, orders);
             }
-            numberOfOrdersOnSide++;
-            tradeableQuantityOnSide =+ order.getQuantity();
+            numberOfOrdersAtSide+=1;
+            tradeableQuantityOnSide += order.getQuantity();
             totalVolumeOnSide = totalVolumeOnSide + (priceLevel * order.getQuantity());
         }
     }
@@ -56,12 +56,10 @@ public class OrderSide {
             int indexMap = pricesTree.get(priceLevel).indexOf(order);
             order.setQuantity(newQuantity);
             if (newQuantity < oldQuantity) { //Order maintains it's position in price level
-                pricesTree.get(priceLevel).add(indexTree, order);
-                pricesHashMap.get(priceLevel).add(indexMap, order);
+                pricesTree.get(priceLevel).set(indexTree,order);
+                pricesHashMap.get(priceLevel).set(indexMap, order);
                 orderHashMap.put(orderId, order);
             } else {
-                pricesTree.get(priceLevel).remove(indexTree); //Order falls to bottom of queue in price level
-                pricesTree.get(priceLevel).addLast(order);
                 pricesHashMap.get(priceLevel).remove(indexMap);
                 pricesHashMap.get(priceLevel).addLast(order);
             }
@@ -76,7 +74,7 @@ public class OrderSide {
         if (orderToDelete != null) {
             long quantity = orderToDelete.getQuantity();
             long priceLevel = orderToDelete.getPrice();
-            numberOfOrdersOnSide--;
+            numberOfOrdersAtSide-=1;
             tradeableQuantityOnSide -= quantity;
             long orderVolume =  priceLevel * quantity;
             totalVolumeOnSide -= orderVolume;
@@ -110,52 +108,23 @@ public class OrderSide {
         return totalVolume;
     }
 
-
     public TreeMap<Long, LinkedList<Order>> getPricesTree() {
         return pricesTree;
-    }
-
-    public void setPricesTree(final TreeMap<Long, LinkedList<Order>> pricesTree) {
-        this.pricesTree = pricesTree;
-    }
-
-    public HashMap<Long, LinkedList<Order>> getPricesHashMap() {
-        return pricesHashMap;
-    }
-
-    public void setPricesHashMap(final HashMap<Long, LinkedList<Order>> pricesHashMap) {
-        this.pricesHashMap = pricesHashMap;
     }
 
     public HashMap<String, Order> getOrderHashMap() {
         return orderHashMap;
     }
 
-    public void setOrderHashMap(final HashMap<String, Order> orderHashMap) {
-        this.orderHashMap = orderHashMap;
-    }
-
-    public long getNumberOfOrdersOnSide() {
-        return numberOfOrdersOnSide;
-    }
-
-    public void setNumberOfOrdersOnSide(final int numberOfOrdersOnSide) {
-        this.numberOfOrdersOnSide = numberOfOrdersOnSide;
+    public long getNumberOfOrdersAtSide() {
+        return numberOfOrdersAtSide;
     }
 
     public long getTradeableQuantityOnSide() {
         return tradeableQuantityOnSide;
     }
 
-    public void setTradeableQuantityOnSide(final long tradeableQuantityOnSide) {
-        this.tradeableQuantityOnSide = tradeableQuantityOnSide;
-    }
-
     public long getTotalVolumeOnSide() {
         return totalVolumeOnSide;
-    }
-
-    public void setTotalVolumeOnSide(final long totalVolumeOnSide) {
-        this.totalVolumeOnSide = totalVolumeOnSide;
     }
 }

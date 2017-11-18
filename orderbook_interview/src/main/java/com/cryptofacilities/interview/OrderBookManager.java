@@ -92,4 +92,13 @@ public interface OrderBookManager {
     List<Order> getOrdersAtLevel(String instrument, Side side, long price );
 
 
+    long getTotalQuantityAtSide( final String instrument, final Side side );
+
+    long getTotalVolumeAtSide( final String instrument, final Side side );
+
+    long getOrderNumAtSide( final String instrument, final Side side );
+
+    List<Order> getOrdersAtSide( final String instrument, final Side side );
+
+
 }

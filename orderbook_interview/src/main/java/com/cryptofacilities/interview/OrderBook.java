@@ -1,7 +1,13 @@
 package com.cryptofacilities.interview;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+/**
+ * Order Book will differentiate between buyers and sellers.
+ */
 public class OrderBook {
 
     private String instrument;
@@ -21,7 +27,7 @@ public class OrderBook {
     }
 
     public void deleteOrder(final String orderId) {
-        if(askSide.getOrderHashMap().containsKey(orderId)) {
+        if (askSide.getOrderHashMap().containsKey(orderId)) {
             askSide.deleteOrder(orderId);
         } else {
             bidSide.deleteOrder(orderId);
@@ -53,6 +59,46 @@ public class OrderBook {
         }
     }
 
+    public long getNumberOfOrdersAtSide(final Side side) {
+        if (side.equals(Side.buy)) {
+            return bidSide.getNumberOfOrdersAtSide();
+        } else {
+            return askSide.getNumberOfOrdersAtSide();
+        }
+    }
+
+    public long getTotalQuantityAtSide(final Side side) {
+        if (side.equals(Side.buy)) {
+            return bidSide.getTradeableQuantityOnSide();
+        } else {
+            return askSide.getTradeableQuantityOnSide();
+        }
+    }
+
+    public long getTotalVolumeAtSide(final Side side) {
+        if (side.equals(Side.buy)) {
+            return bidSide.getTotalVolumeOnSide();
+        } else {
+            return askSide.getTotalVolumeOnSide();
+        }
+    }
+
+    public List<Order> getOrdersAtSide(final Side side) {
+        TreeMap<Long, LinkedList<Order>> pricesTreeMap;
+        if (side.equals(Side.buy)) {
+            pricesTreeMap = bidSide.getPricesTree();
+        } else {
+            pricesTreeMap = askSide.getPricesTree();
+        }
+        LinkedList<Order> allOrdersOnSide = new LinkedList<Order>();
+        for (Map.Entry<Long, LinkedList<Order>> entry : pricesTreeMap.entrySet()) {
+            for (Order order : entry.getValue()) {
+                allOrdersOnSide.add(order);
+            }
+        }
+        return allOrdersOnSide;
+    }
+
     public long getBestPriceForSide(final Side side) {
         if (side.equals(Side.buy)) {
             if (!bidSide.getPricesTree().isEmpty()) {
@@ -66,27 +112,12 @@ public class OrderBook {
         return 0;
     }
 
-    public String getInstrument() {
-        return instrument;
-    }
-
-    public void setInstrument(final String instrument) {
-        this.instrument = instrument;
-    }
-
     public OrderSide getAskSide() {
         return askSide;
-    }
-
-    public void setAskSide(final OrderSide askSide) {
-        this.askSide = askSide;
     }
 
     public OrderSide getBidSide() {
         return bidSide;
     }
 
-    public void setBidSide(final OrderSide bidSide) {
-        this.bidSide = bidSide;
-    }
 }

@@ -10,7 +10,7 @@ public class OrderBookManagerImpl implements OrderBookManager {
 
     /*
         Only one order book for this assignment. In reality there would be multiple order books.
-        Each dedicated to  it's own separate instrument.
+        Each dedicated to it's own separate instrument.
      */
     private HashMap<String, OrderBook> orderBooks = new HashMap<String, OrderBook>() {{
        put("BTC", new OrderBook("BTC"));
@@ -85,4 +85,37 @@ public class OrderBookManagerImpl implements OrderBookManager {
         }
         return null;
     }
+
+    public long getTotalQuantityAtSide(final String instrument, final Side side) {
+        OrderBook orderBook = orderBooks.get(instrument);
+        if (orderBook != null) {
+            return orderBook.getTotalQuantityAtSide(side);
+        }
+        return 0;
+    }
+
+    public long getTotalVolumeAtSide(final String instrument, final Side side) {
+        OrderBook orderBook = orderBooks.get(instrument);
+        if (orderBook != null) {
+            return orderBook.getTotalVolumeAtSide(side);
+        }
+        return 0;
+    }
+
+    public long getOrderNumAtSide(final String instrument, final Side side) {
+        OrderBook orderBook = orderBooks.get(instrument);
+        if (orderBook != null) {
+            return orderBook.getNumberOfOrdersAtSide(side);
+        }
+        return 0;
+    }
+
+    public List<Order> getOrdersAtSide(final String instrument, final Side side) {
+        OrderBook orderBook = orderBooks.get(instrument);
+        if (orderBook != null) {
+            return orderBook.getOrdersAtSide(side);
+        }
+        return null;
+    }
+
 }

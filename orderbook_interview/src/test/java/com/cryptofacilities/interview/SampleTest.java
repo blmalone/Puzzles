@@ -2,7 +2,7 @@ package com.cryptofacilities.interview;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by CF-8 on 6/27/2017.
