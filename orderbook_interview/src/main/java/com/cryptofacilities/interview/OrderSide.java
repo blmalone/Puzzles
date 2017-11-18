@@ -59,8 +59,8 @@ public class OrderSide {
                 pricesTree.get(priceLevel).add(indexTree, order);
                 pricesHashMap.get(priceLevel).add(indexMap, order);
                 orderHashMap.put(orderId, order);
-            } else { //Order falls to bottom of queue in price level
-                pricesTree.get(priceLevel).remove(indexTree);
+            } else {
+                pricesTree.get(priceLevel).remove(indexTree); //Order falls to bottom of queue in price level
                 pricesTree.get(priceLevel).addLast(order);
                 pricesHashMap.get(priceLevel).remove(indexMap);
                 pricesHashMap.get(priceLevel).addLast(order);
@@ -80,7 +80,7 @@ public class OrderSide {
             tradeableQuantityOnSide -= quantity;
             long orderVolume =  priceLevel * quantity;
             totalVolumeOnSide -= orderVolume;
-            pricesTree.get(priceLevel).remove(orderToDelete); //Does this remove the actual object?
+            pricesTree.get(priceLevel).remove(orderToDelete);
             pricesHashMap.get(priceLevel).remove(orderToDelete);
             if (pricesHashMap.get(priceLevel).size() == 0) {
                 pricesTree.remove(priceLevel);
