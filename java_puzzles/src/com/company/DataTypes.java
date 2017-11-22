@@ -57,5 +57,8 @@ public class DataTypes {
         //Signed Right Shift -> >>
         int resultOfRightShift = 8 >> 1; //8 >> 1 evaluates to 4 (In binary: 1000 -> 0100)
 
+        /**
+         * The unsigned version of the above operators add a zero into the left most bit.
+         */
     }
 }
