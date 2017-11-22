@@ -41,7 +41,6 @@ public class SwapTwoNumbers {
          */
         a = a ^ b; // 0100
         System.out.println("a: " + a + " b: " + b + " -> previously -> a: 2  b: 4");
-
     }
 
 }
